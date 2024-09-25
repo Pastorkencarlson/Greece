@@ -1,0 +1,549 @@
+### **Devotional Quiz Code (`devotional_quiz.html`):**
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pop Quiz on Paul!</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #eef;
+        }
+        .quiz-container {
+            width: 700px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 30px;
+            box-shadow: 0 0 10px #aaa;
+        }
+        h1 {
+            text-align: center;
+        }
+        .question {
+            font-size: 18px;
+            margin-top: 20px;
+        }
+        .options {
+            margin: 15px 0;
+        }
+        .options label {
+            display: block;
+            margin-bottom: 8px;
+        }
+        #submit-btn, #restart-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007acc;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        #restart-btn {
+            background-color: #d9534f;
+            display: none;
+        }
+        #result {
+            font-size: 20px;
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <h1>Devotional Quiz</h1>
+    <div id="quiz"></div>
+    <button id="submit-btn">Submit Answers</button>
+    <button id="restart-btn">Restart Quiz</button>
+    <div id="result"></div>
+</div>
+
+<script>
+    const quizData = [
+        // Day 1: A Zealous Pharisee
+        {
+            question: "1. What was Saul's attitude towards the early church before his conversion?",
+            options: [
+                "He was indifferent",
+                "He sought to destroy it",
+                "He secretly supported it",
+                "He was a member of it"
+            ],
+            correct: "He sought to destroy it"
+        },
+        {
+            question: "2. At whose stoning did Saul give his approval?",
+            options: [
+                "Stephen",
+                "Peter",
+                "James",
+                "John"
+            ],
+            correct: "Stephen"
+        },
+        {
+            question: "3. What role did Saul play during the stoning of Stephen?",
+            options: [
+                "He threw stones",
+                "He held the coats of those stoning Stephen",
+                "He defended Stephen",
+                "He was not present"
+            ],
+            correct: "He held the coats of those stoning Stephen"
+        },
+        // Day 2: The Damascus Detour
+        {
+            question: "4. What event led to Saul's dramatic conversion?",
+            options: [
+                "A dream",
+                "A blinding encounter with Jesus on the road to Damascus",
+                "Hearing a sermon",
+                "Reading the Scriptures"
+            ],
+            correct: "A blinding encounter with Jesus on the road to Damascus"
+        },
+        {
+            question: "5. What happened to Saul physically during his encounter with Jesus?",
+            options: [
+                "He lost his hearing",
+                "He became paralyzed",
+                "He was blinded",
+                "He lost his voice"
+            ],
+            correct: "He was blinded"
+        },
+        {
+            question: "6. Who did Jesus say Saul was persecuting?",
+            options: [
+                "The apostles",
+                "The church",
+                "Jesus Himself",
+                "The poor"
+            ],
+            correct: "Jesus Himself"
+        },
+        {
+            question: "7. Who helped Saul regain his sight in Damascus?",
+            options: [
+                "Ananias",
+                "Barnabas",
+                "Simon Peter",
+                "Philip"
+            ],
+            correct: "Ananias"
+        },
+        // Day 3: No Filter
+        {
+            question: "8. What did Saul begin doing immediately after his conversion?",
+            options: [
+                "Preaching that Jesus is the Son of God",
+                "Returning to Jerusalem",
+                "Persecuting Christians",
+                "Writing letters"
+            ],
+            correct: "Preaching that Jesus is the Son of God"
+        },
+        {
+            question: "9. How did the Jews react to Saul's preaching about Jesus?",
+            options: [
+                "They accepted his message",
+                "They ignored him",
+                "They plotted to kill him",
+                "They worshipped him"
+            ],
+            correct: "They plotted to kill him"
+        },
+        {
+            question: "10. How did Saul escape from Damascus when there was a plot to kill him?",
+            options: [
+                "Through a secret tunnel",
+                "In a basket lowered from the city wall",
+                "Disguised as a soldier",
+                "By bribing the guards"
+            ],
+            correct: "In a basket lowered from the city wall"
+        },
+        // Day 4: The Wilderness Academy
+        {
+            question: "11. Where did Saul go after his conversion instead of immediately consulting with the apostles?",
+            options: [
+                "Arabia",
+                "Rome",
+                "Jerusalem",
+                "Athens"
+            ],
+            correct: "Arabia"
+        },
+        {
+            question: "12. What was significant about Saul's time in Arabia?",
+            options: [
+                "He was hiding from persecution",
+                "It was a time of preparation and learning from God",
+                "He was preaching to the Gentiles",
+                "He was training with the apostles"
+            ],
+            correct: "It was a time of preparation and learning from God"
+        },
+        // Day 5: The Multicultural Megachurch
+        {
+            question: "13. In which city were believers first called 'Christians'?",
+            options: [
+                "Jerusalem",
+                "Antioch",
+                "Damascus",
+                "Corinth"
+            ],
+            correct: "Antioch"
+        },
+        {
+            question: "14. What characteristic was notable about the church in Antioch?",
+            options: [
+                "It was exclusively Jewish",
+                "It was a multicultural church with both Jews and Gentiles",
+                "It was a small, isolated community",
+                "It rejected Gentile believers"
+            ],
+            correct: "It was a multicultural church with both Jews and Gentiles"
+        },
+        {
+            question: "15. What action did the church in Antioch take when they learned of a coming famine?",
+            options: [
+                "They ignored the news",
+                "They stored food only for themselves",
+                "They sent aid to the believers in Judea",
+                "They moved to another city"
+            ],
+            correct: "They sent aid to the believers in Judea"
+        },
+        // Day 6: Showdown on Cypress
+        {
+            question: "16. Who was Elymas?",
+            options: [
+                "A Roman centurion",
+                "A Jewish sorcerer and false prophet",
+                "A disciple of Jesus",
+                "A high priest"
+            ],
+            correct: "A Jewish sorcerer and false prophet"
+        },
+        {
+            question: "17. What happened to Elymas when he opposed Paul?",
+            options: [
+                "He was converted",
+                "He was struck blind",
+                "He was arrested",
+                "He fled the city"
+            ],
+            correct: "He was struck blind"
+        },
+        {
+            question: "18. What was the result of Elymas's blindness on Sergius Paulus?",
+            options: [
+                "He refused to believe",
+                "He believed in the teaching of the Lord",
+                "He arrested Paul and Barnabas",
+                "He ignored the incident"
+            ],
+            correct: "He believed in the teaching of the Lord"
+        },
+        // Day 7: Preaching, Perseverance, & Plot Twists
+        {
+            question: "19. Who left Paul and Barnabas during their missionary journey to return to Jerusalem?",
+            options: [
+                "John Mark",
+                "Silas",
+                "Timothy",
+                "Luke"
+            ],
+            correct: "John Mark"
+        },
+        {
+            question: "20. What was the main theme of Paul's sermon in Pisidian Antioch?",
+            options: [
+                "The importance of the law",
+                "Jesus as the fulfillment of God's promises",
+                "The need to build a temple",
+                "A warning against Gentiles"
+            ],
+            correct: "Jesus as the fulfillment of God's promises"
+        },
+        {
+            question: "21. How did some Jewish leaders react to Paul's successful preaching to the Gentiles?",
+            options: [
+                "They rejoiced",
+                "They were indifferent",
+                "They were filled with jealousy and opposed him",
+                "They joined him"
+            ],
+            correct: "They were filled with jealousy and opposed him"
+        },
+        // Day 8: Gospel Road Trip
+        {
+            question: "22. In Iconium, how did Paul and Barnabas react to opposition?",
+            options: [
+                "They stopped preaching",
+                "They continued speaking boldly for the Lord",
+                "They fled immediately",
+                "They compromised their message"
+            ],
+            correct: "They continued speaking boldly for the Lord"
+        },
+        {
+            question: "23. What did God do to confirm the message of Paul and Barnabas in Iconium?",
+            options: [
+                "Sent angels to protect them",
+                "Granted signs and wonders to be done by their hands",
+                "Made their enemies disappear",
+                "Wrote messages in the sky"
+            ],
+            correct: "Granted signs and wonders to be done by their hands"
+        },
+        // Day 9: Gods Among Us?
+        {
+            question: "24. Which two gods did the people of Lystra think Paul and Barnabas were?",
+            options: [
+                "Zeus and Hermes",
+                "Apollo and Artemis",
+                "Poseidon and Athena",
+                "Ares and Aphrodite"
+            ],
+            correct: "Zeus and Hermes"
+        },
+        {
+            question: "25. How did Paul and Barnabas respond when people tried to offer sacrifices to them?",
+            options: [
+                "They accepted the sacrifices",
+                "They left the city",
+                "They tore their clothes and urged them to turn to the living God",
+                "They performed more miracles"
+            ],
+            correct: "They tore their clothes and urged them to turn to the living God"
+        },
+        // Day 10: Bold & Brave
+        {
+            question: "26. What happened to Paul in Lystra after Jews from Antioch and Iconium persuaded the crowd?",
+            options: [
+                "He was honored",
+                "He was stoned and left for dead",
+                "He was imprisoned",
+                "He was made a king"
+            ],
+            correct: "He was stoned and left for dead"
+        },
+        {
+            question: "27. After being stoned, what did Paul do?",
+            options: [
+                "Gave up his mission",
+                "Fled to another country",
+                "Got up and went back into the city",
+                "Retired from ministry"
+            ],
+            correct: "Got up and went back into the city"
+        },
+        {
+            question: "28. What did Paul and Barnabas tell the disciples about entering the kingdom of God?",
+            options: [
+                "It would be easy",
+                "We must go through many hardships",
+                "Only Jews can enter",
+                "It requires following the law"
+            ],
+            correct: "We must go through many hardships"
+        },
+        // Day 11: Road Trip Reflections
+        {
+            question: "29. What is one key lesson from Paul and Barnabas's first missionary journey?",
+            options: [
+                "Avoiding all conflict",
+                "Perseverance in the face of challenges",
+                "Accumulating wealth",
+                "Staying in one place"
+            ],
+            correct: "Perseverance in the face of challenges"
+        },
+        // Day 12: Grace Under Fire
+        {
+            question: "30. What issue did the Jerusalem Council address in Acts 15?",
+            options: [
+                "Whether Gentile believers needed to be circumcised and follow the Law of Moses",
+                "Whether to appoint new apostles",
+                "Where to send missionaries next",
+                "How to fund the church"
+            ],
+            correct: "Whether Gentile believers needed to be circumcised and follow the Law of Moses"
+        },
+        {
+            question: "31. What was the conclusion of the Jerusalem Council regarding Gentile believers?",
+            options: [
+                "They must be circumcised",
+                "They must follow the entire Law of Moses",
+                "Salvation is by grace through faith, without needing to follow the Law",
+                "They cannot be saved"
+            ],
+            correct: "Salvation is by grace through faith, without needing to follow the Law"
+        },
+        // Day 13: The Freedom Letter
+        {
+            question: "32. What was the purpose of the letter sent by the Jerusalem Council to Gentile believers?",
+            options: [
+                "To impose new laws",
+                "To encourage them and affirm that they did not need to follow the Mosaic Law for salvation",
+                "To warn them against Paul",
+                "To collect money"
+            ],
+            correct: "To encourage them and affirm that they did not need to follow the Mosaic Law for salvation"
+        },
+        {
+            question: "33. How did the Gentile believers react to the letter from the Jerusalem Council?",
+            options: [
+                "They were displeased",
+                "They rejoiced for its encouragement",
+                "They ignored it",
+                "They became confused"
+            ],
+            correct: "They rejoiced for its encouragement"
+        },
+        // Day 14: The Great Divide
+        {
+            question: "34. Why did Paul and Barnabas part ways before Paul's second missionary journey?",
+            options: [
+                "A disagreement over bringing John Mark",
+                "They had fulfilled their mission",
+                "They were arrested",
+                "They wanted to cover more ground"
+            ],
+            correct: "A disagreement over bringing John Mark"
+        },
+        {
+            question: "35. Who did Paul choose to accompany him after separating from Barnabas?",
+            options: [
+                "Silas",
+                "Timothy",
+                "Luke",
+                "Peter"
+            ],
+            correct: "Silas"
+        },
+        // Day 15: Passing the Torch
+        {
+            question: "36. What was unique about Timothy's background?",
+            options: [
+                "He was fully Jewish",
+                "He was fully Greek",
+                "His mother was Jewish and his father was Greek",
+                "He was a Roman official"
+            ],
+            correct: "His mother was Jewish and his father was Greek"
+        },
+        {
+            question: "37. Why did Paul have Timothy circumcised?",
+            options: [
+                "It was required for salvation",
+                "To avoid offending the Jews they were ministering to",
+                "Because Timothy insisted",
+                "To comply with Roman law"
+            ],
+            correct: "To avoid offending the Jews they were ministering to"
+        },
+        // Day 16: The Divine GPS
+        {
+            question: "38. How did the Holy Spirit guide Paul and his companions on where to preach?",
+            options: [
+                "Through prophetic scrolls",
+                "By closing doors to certain regions",
+                "By sending angels",
+                "Through weather patterns"
+            ],
+            correct: "By closing doors to certain regions"
+        },
+        {
+            question: "39. What vision did Paul have that directed him to Macedonia?",
+            options: [
+                "An angel with a message",
+                "A dream about a shipwreck",
+                "A man from Macedonia pleading for help",
+                "A burning bush"
+            ],
+            correct: "A man from Macedonia pleading for help"
+        },
+        {
+            question: "40. What is a key lesson from Paul's experience with divine guidance?",
+            options: [
+                "We should always follow our own plans",
+                "Closed doors can be God's way of redirecting us",
+                "God does not guide us",
+                "Obstacles mean we should give up"
+            ],
+            correct: "Closed doors can be God's way of redirecting us"
+        }
+    ];
+
+    const quiz = document.getElementById('quiz');
+    const submitBtn = document.getElementById('submit-btn');
+    const restartBtn = document.getElementById('restart-btn');
+    const result = document.getElementById('result');
+
+    function loadQuiz() {
+        quiz.innerHTML = '';
+        quizData.forEach((q, index) => {
+            const questionDiv = document.createElement('div');
+            questionDiv.classList.add('question');
+
+            const questionTitle = document.createElement('p');
+            questionTitle.textContent = q.question;
+            questionDiv.appendChild(questionTitle);
+
+            const optionsDiv = document.createElement('div');
+            optionsDiv.classList.add('options');
+
+            q.options.forEach(option => {
+                const label = document.createElement('label');
+                const input = document.createElement('input');
+                input.type = 'radio';
+                input.name = 'question' + index;
+                input.value = option;
+                label.appendChild(input);
+                label.appendChild(document.createTextNode(option));
+                optionsDiv.appendChild(label);
+            });
+
+            questionDiv.appendChild(optionsDiv);
+            quiz.appendChild(questionDiv);
+        });
+    }
+
+    function calculateResults() {
+        let score = 0;
+        quizData.forEach((q, index) => {
+            const selectedOption = document.querySelector('input[name="question' + index + '"]:checked');
+            if (selectedOption && selectedOption.value === q.correct) {
+                score++;
+            }
+        });
+        result.textContent = 'You scored ' + score + ' out of ' + quizData.length;
+    }
+
+    submitBtn.addEventListener('click', () => {
+        calculateResults();
+        submitBtn.style.display = 'none';
+        restartBtn.style.display = 'inline-block';
+    });
+
+    restartBtn.addEventListener('click', () => {
+        loadQuiz();
+        result.textContent = '';
+        submitBtn.style.display = 'inline-block';
+        restartBtn.style.display = 'none';
+    });
+
+    // Load the quiz on page load
+    loadQuiz();
+</script>
+
+</body>
+</html>
+```
